@@ -2,8 +2,13 @@
 name = "streak"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Guru Senthil"]
+description = """
+streak (noun) [/strēk/]: a continuous period of specified success or luck.
+Create, view and track streaks to develop lasting habits by creating 
+positive reward signals.
+"""
 
 [dependencies]
 clap = { version = "4.4.6", features = ["derive"] }
+mysql = { version = "24.0" }

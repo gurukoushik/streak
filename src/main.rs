@@ -1,11 +1,8 @@
 use clap::{Parser, Subcommand};
 
-/// streak (noun) [/strēk/]: a continuous period of specified success or luck.
-/// Create, view and track streaks to develop lasting habits by creating 
-/// positive reward signals. 
 #[derive(Debug, Parser)]
-#[clap(name = "streak", version)]
-pub struct App {
+#[clap(author, version, about, long_about = None)]
+pub struct Streak {
     #[clap(subcommand)]
     command: Command,
 }
@@ -22,9 +19,21 @@ enum Command {
         /// Name of the habit to log
         name: String,
     },
+    /// List all the streaks
+    List {},
 }
 
-fn main () {
-    let app = App::parse();
-    println!("{:?}", app);
+fn main() {
+    let args = Streak::parse();
+    match args.command {
+        Command::Create { name } => {
+            println!("create {:?}", name)
+        }
+        Command::Log { name } => {
+            println!("log {:?}", name)
+        }
+        Command::List {} => {
+            println!("list")
+        }
+    }
 }
