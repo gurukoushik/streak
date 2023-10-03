@@ -1,3 +1,4 @@
+mod art;
 use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
@@ -27,7 +28,8 @@ fn main() {
     let args = App::parse();
     match args.command {
         Command::Create { name } => {
-            println!("create {:?}", name)
+            println!("{}", art::rhino());
+            println!("Streak for {:?} created!", name)
         }
         Command::Log { name } => {
             println!("log {:?}", name)
