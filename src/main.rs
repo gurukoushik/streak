@@ -1,4 +1,5 @@
 mod art;
+mod db;
 use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
@@ -29,10 +30,11 @@ fn main() {
     match args.command {
         Command::Create { name } => {
             println!("{}", art::rhino());
-            println!("Streak for {:?} created!", name)
+            println!("Streak for {} created!", name)
         }
         Command::Log { name } => {
-            println!("log {:?}", name)
+            println!("{}", art::jordan());
+            println!("Streak logged for {}!", name)
         }
         Command::List {} => {
             println!("list")

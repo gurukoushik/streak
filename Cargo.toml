@@ -11,4 +11,4 @@ positive reward signals.
 
 [dependencies]
 clap = { version = "4.4.6", features = ["derive"] }
-mysql = { version = "24.0" }
+rusqlite = { version = "0.29.0" }
