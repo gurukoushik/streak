@@ -30,7 +30,9 @@ fn main() {
     match args.command {
         Command::Create { name } => {
             println!("{}", art::rhino());
-            println!("Streak for {} created!", name)
+            println!("Streak for {} created!", name);
+            let conn = db::get_db_connection();
+            db::create_table_if_not_exists(&conn);
         }
         Command::Log { name } => {
             println!("{}", art::jordan());
