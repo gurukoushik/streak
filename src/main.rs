@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
-pub struct Streak {
+pub struct App {
     #[clap(subcommand)]
     command: Command,
 }
@@ -24,7 +24,7 @@ enum Command {
 }
 
 fn main() {
-    let args = Streak::parse();
+    let args = App::parse();
     match args.command {
         Command::Create { name } => {
             println!("create {:?}", name)
