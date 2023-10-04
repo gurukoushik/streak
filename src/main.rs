@@ -44,12 +44,14 @@ fn main() {
             db::create_table_if_not_exists(&conn);
             let streaks = db::list_streak(&conn);
             match streaks {
-                Ok(s) => { 
+                Ok(s) => {
                     for streak in s {
                         println!("{}", streak.name)
-                    }    
-                },
-                Err(_) => { println!("No streaks found!"); }
+                    }
+                }
+                Err(_) => {
+                    println!("No streaks found!");
+                }
             }
         }
     }
