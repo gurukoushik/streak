@@ -1,4 +1,4 @@
-use rusqlite::{params, Connection, Result};
+use rusqlite::{Connection, Result};
 
 pub static STREAKS_DB_PATH: &str = "streaks.db";
 pub static STREAKS_TABLE_NAME: &str = "streaks";
@@ -15,14 +15,14 @@ pub fn get_db_connection(db_path: &str) -> Connection {
     Connection::open(db_path.clone()).expect(format!("DB at {db_path} failed to connect!").as_str())
 }
 
-// TODO: parametrize to accept any table and attrs
-pub fn create_table_if_not_exists(conn: &Connection) {
+// TODO: parametrize to accept attrs object and construct query
+pub fn create_table_if_not_exists(conn: &Connection, table_name: &str) {
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS streaks (
+        "CREATE TABLE IF NOT EXISTS {table_name} (
             id INTEGER PRIMARY KEY,
             name TEXT
         )",
-        [],
+        [&table_name],
     )
     .expect("Failed to create table");
 }

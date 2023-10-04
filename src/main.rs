@@ -30,7 +30,7 @@ fn main() {
     match args.command {
         Command::Create { name } => {
             let conn = db::get_db_connection(db::STREAKS_DB_PATH);
-            db::create_table_if_not_exists(&conn);
+            db::create_table_if_not_exists(&conn, db::STREAKS_TABLE_NAME);
             db::create_streak(&conn, &name);
             println!("{}", art::rhino());
             println!("Streak for {} created!", name);
@@ -41,7 +41,7 @@ fn main() {
         }
         Command::List {} => {
             let conn = db::get_db_connection(db::STREAKS_DB_PATH);
-            db::create_table_if_not_exists(&conn);
+            db::create_table_if_not_exists(&conn, db::STREAKS_TABLE_NAME);
             let streaks = db::list_streak(&conn);
             match streaks {
                 Ok(s) => {
