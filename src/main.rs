@@ -42,7 +42,15 @@ fn main() {
         Command::List {} => {
             let conn = db::get_db_connection(db::STREAKS_DB_PATH);
             db::create_table_if_not_exists(&conn);
-            db::list_streak(&conn);
+            let streaks = db::list_streak(&conn);
+            match streaks {
+                Ok(s) => { 
+                    for streak in s {
+                        println!("{}", streak.name)
+                    }    
+                },
+                Err(_) => { println!("No streaks found!"); }
+            }
         }
     }
 }

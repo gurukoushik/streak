@@ -4,9 +4,9 @@ pub static STREAKS_DB_PATH: &str = "streaks.db";
 pub static STREAKS_TABLE_NAME: &str = "streaks";
 
 #[derive(Debug)]
-struct Streak {
+pub struct Streak {
     id: i32,
-    name: String,
+    pub name: String,
 }
 
 // TODO: put db in a non local path
@@ -32,7 +32,7 @@ pub fn create_streak(conn: &Connection, name: &String) {
         .expect("Failed to add streak!");
 }
 
-pub fn list_streak(conn: &Connection) {
+pub fn list_streak(conn: &Connection) -> Result<Vec<Streak>> {
     let query = "SELECT id, name FROM streaks";
     let mut stmt = conn.prepare(query).expect("Failed to run query!");
     let entries = stmt
@@ -44,7 +44,5 @@ pub fn list_streak(conn: &Connection) {
         })
         .expect("Failed to extract entries!")
         .collect::<Result<Vec<_>>>();
-    for entry in entries {
-        println!("{:?}", entry);
-    }
+    entries
 }
