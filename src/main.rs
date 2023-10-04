@@ -2,6 +2,8 @@ mod art;
 mod db;
 use clap::{Parser, Subcommand};
 
+static STREAKS_DB_PATH: &str = "streaks.db";
+
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
 pub struct App {
@@ -31,7 +33,7 @@ fn main() {
         Command::Create { name } => {
             println!("{}", art::rhino());
             println!("Streak for {} created!", name);
-            let conn = db::get_db_connection();
+            let conn = db::get_db_connection(STREAKS_DB_PATH);
             db::create_table_if_not_exists(&conn);
         }
         Command::Log { name } => {

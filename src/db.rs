@@ -6,11 +6,10 @@ struct Streak {
     name: String,
 }
 
-// TODO: parametrize db path
 // TODO: put db in a non local path
-pub fn get_db_connection() -> Connection {
-    let db_path = String::from("streaks.db");
-    Connection::open(db_path).expect("Streaks DB failed to connect!")
+pub fn get_db_connection(db_path: &str) -> Connection {
+    let db_path = String::from(db_path);
+    Connection::open(db_path.clone()).expect(format!("DB at {db_path} failed to connect!").as_str())
 }
 
 pub fn create_table_if_not_exists(conn: &Connection) {
