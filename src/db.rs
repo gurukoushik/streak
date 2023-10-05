@@ -15,6 +15,7 @@ pub struct Streak {
 pub struct LogStreak {
     id: i32,
     streakId: i32,
+    timestamp_utc: chrono::DateTime<chrono::Utc>,
 }
 
 // TODO: put db in a non local path
@@ -24,11 +25,24 @@ pub fn get_db_connection(db_path: &str) -> Connection {
 }
 
 // TODO: parametrize to accept attrs object and construct query
-pub fn create_table_if_not_exists(conn: &Connection, table_name: &str) {
+pub fn create_streaks_table_if_not_exists(conn: &Connection, table_name: &str) {
     let query = format!(
         "CREATE TABLE IF NOT EXISTS {} (
         id INTEGER PRIMARY KEY,
         name TEXT
+    )",
+        table_name
+    );
+    conn.execute(query.as_str(), [])
+        .expect("Failed to create table");
+}
+
+pub fn create_streaks_log_table_if_not_exists(conn: &Connection, table_name: &str) {
+    let query = format!(
+        "CREATE TABLE IF NOT EXISTS {} (
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        timestamp_utc DATETIME
     )",
         table_name
     );
@@ -59,5 +73,5 @@ pub fn list_streak(conn: &Connection) -> Result<Vec<Streak>> {
 pub fn log_streak(conn: &Connection, name: &String) {
     let current_timestamp = chrono::offset::Utc::now();
     println!("{}", current_timestamp);
-    conn.execute("", [&name]).expect("Failed to log streak!");
+    conn.execute("INSERT INTO streakslog (name, timestamp_utc) VALUES (?1, ?2)", &[&name, &current_timestamp.to_string()]).expect("Failed to log streak!");
 }
