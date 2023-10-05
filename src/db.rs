@@ -73,5 +73,9 @@ pub fn list_streak(conn: &Connection) -> Result<Vec<Streak>> {
 pub fn log_streak(conn: &Connection, name: &String) {
     let current_timestamp = chrono::offset::Utc::now();
     println!("{}", current_timestamp);
-    conn.execute("INSERT INTO streakslog (name, timestamp_utc) VALUES (?1, ?2)", &[&name, &current_timestamp.to_string()]).expect("Failed to log streak!");
+    conn.execute(
+        "INSERT INTO streakslog (name, timestamp_utc) VALUES (?1, ?2)",
+        &[&name, &current_timestamp.to_string()],
+    )
+    .expect("Failed to log streak!");
 }
