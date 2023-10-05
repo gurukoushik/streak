@@ -1,12 +1,20 @@
+use chrono;
 use rusqlite::{Connection, Result};
 
 pub static STREAKS_DB_PATH: &str = "streaks.db";
 pub static STREAKS_TABLE_NAME: &str = "streaks";
+pub static STREAKS_LOG_TABLE_NAME: &str = "streakslog";
 
 #[derive(Debug)]
 pub struct Streak {
     id: i32,
     pub name: String,
+}
+
+#[derive(Debug)]
+pub struct LogStreak {
+    id: i32,
+    streakId: i32,
 }
 
 // TODO: put db in a non local path
@@ -17,14 +25,15 @@ pub fn get_db_connection(db_path: &str) -> Connection {
 
 // TODO: parametrize to accept attrs object and construct query
 pub fn create_table_if_not_exists(conn: &Connection, table_name: &str) {
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS {table_name} (
-            id INTEGER PRIMARY KEY,
-            name TEXT
-        )",
-        [&table_name],
-    )
-    .expect("Failed to create table");
+    let query = format!(
+        "CREATE TABLE IF NOT EXISTS {} (
+        id INTEGER PRIMARY KEY,
+        name TEXT
+    )",
+        table_name
+    );
+    conn.execute(query.as_str(), [])
+        .expect("Failed to create table");
 }
 
 pub fn create_streak(conn: &Connection, name: &String) {
@@ -45,4 +54,10 @@ pub fn list_streak(conn: &Connection) -> Result<Vec<Streak>> {
         .expect("Failed to extract entries!")
         .collect::<Result<Vec<_>>>();
     entries
+}
+
+pub fn log_streak(conn: &Connection, name: &String) {
+    let current_timestamp = chrono::offset::Utc::now();
+    println!("{}", current_timestamp);
+    conn.execute("", [&name]).expect("Failed to log streak!");
 }
