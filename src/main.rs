@@ -39,7 +39,7 @@ fn main() {
             let conn = db::get_db_connection(db::STREAKS_DB_PATH);
             db::create_streaks_log_table_if_not_exists(&conn, db::STREAKS_LOG_TABLE_NAME);
             db::log_streak(&conn, &name);
-            println!("{}", art::jordan());
+            println!("{}", art::cycle());
             println!("Streak logged for {}!", name)
         }
         Command::List {} => {
