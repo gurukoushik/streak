@@ -29,7 +29,7 @@ pub fn create_streaks_table_if_not_exists(conn: &Connection, table_name: &str) {
     let query = format!(
         "CREATE TABLE IF NOT EXISTS {} (
         id INTEGER PRIMARY KEY,
-        name TEXT
+        name TEXT UNIQUE
     )",
         table_name
     );
