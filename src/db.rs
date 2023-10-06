@@ -41,6 +41,7 @@ pub fn create_streaks_log_table_if_not_exists(conn: &Connection, table_name: &st
     let query = format!(
         "CREATE TABLE IF NOT EXISTS {} (
         id INTEGER PRIMARY KEY,
+        streakId INTEGER,
         name TEXT,
         timestamp_utc DATETIME
     )",
@@ -81,8 +82,8 @@ pub fn log_streak(conn: &Connection, name: &String) {
     if !id_list.is_empty() {
         let current_timestamp = chrono::offset::Utc::now();
         conn.execute(
-            "INSERT INTO streakslog (name, timestamp_utc) VALUES (?1, ?2)",
-            &[&name, &current_timestamp.to_string()],
+            "INSERT INTO streakslog (name, streakId, timestamp_utc) VALUES (?1, ?2, ?3)",
+            &[&name, &id_list[0].to_string(), &current_timestamp.to_string()],
         )
         .expect("Failed to log streak!");
     } else {
