@@ -37,6 +37,7 @@ fn main() {
         }
         Command::Log { name } => {
             let conn = db::get_db_connection(db::STREAKS_DB_PATH);
+            db::create_streaks_table_if_not_exists(&conn, db::STREAKS_TABLE_NAME);
             db::create_streaks_log_table_if_not_exists(&conn, db::STREAKS_LOG_TABLE_NAME);
             db::log_streak(&conn, &name);
             println!("{}", art::cycle());

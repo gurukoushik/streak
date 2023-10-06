@@ -71,11 +71,18 @@ pub fn list_streak(conn: &Connection) -> Result<Vec<Streak>> {
 }
 
 pub fn log_streak(conn: &Connection, name: &String) {
-    let current_timestamp = chrono::offset::Utc::now();
-    println!("{}", current_timestamp);
-    conn.execute(
-        "INSERT INTO streakslog (name, timestamp_utc) VALUES (?1, ?2)",
-        &[&name, &current_timestamp.to_string()],
-    )
-    .expect("Failed to log streak!");
+    let q = format!("SELECT id FROM streaks WHERE name = '{}';", name);
+    let res = conn.execute(q.as_str(), []).expect("Streak was not created!");
+    
+    if res != 0 {
+        let current_timestamp = chrono::offset::Utc::now();
+        conn.execute(
+            "INSERT INTO streakslog (name, timestamp_utc) VALUES (?1, ?2)",
+            &[&name, &current_timestamp.to_string()],
+        )
+        .expect("Failed to log streak!");
+    }
+    else {
+        println!("No streak with name {name}!");
+    }
 }
