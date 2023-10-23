@@ -23,6 +23,8 @@ enum Command {
     },
     /// List all the streaks
     List {},
+    /// Remind about incomplete streaks for the day
+    Remind {},
 }
 
 fn main() {
@@ -57,7 +59,14 @@ fn main() {
                     println!("No streaks found!");
                 }
             }
-            db::todays_streak(&conn);
+        }
+        Command::Remind {} => {
+            let conn = db::get_db_connection(db::STREAKS_DB_PATH);
+            db::create_streaks_table_if_not_exists(&conn, db::STREAKS_TABLE_NAME);
+            let remind_streaks = db::remind_streaks(&conn);
+            for streak in remind_streaks {
+                println!("{}", streak.name)
+            }
         }
     }
 }

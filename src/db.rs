@@ -95,18 +95,25 @@ pub fn log_streak(conn: &Connection, name: &String) {
     }
 }
 
-pub fn todays_streak(conn: &Connection) {
+pub fn remind_streaks(conn: &Connection) -> Vec<Streak> {
     let current_timestamp = chrono::offset::Utc::now();
     let query = format!(
         "SELECT streak_id FROM streakslog WHERE substr(timestamp_utc, 1, 10) = substr('{}', 1, 10)",
         current_timestamp.to_string()
     );
     let mut stmt = conn.prepare(query.as_str()).expect("Failed to run query!");
-    let entries = stmt
-        .query_map([], |row| {
-            Ok(row.get::<_, i32>(0)?)
-        })
+    let logged_streaks = stmt
+        .query_map([], |row| Ok(row.get::<_, i32>(0)?))
         .expect("Failed to extract entries!")
-        .collect::<Result<Vec<_>>>();
-    println!("{:?}", entries);
+        .collect::<Result<Vec<_>>>()
+        .expect("Failed to get logged streaks!");
+    let all_streaks = list_streak(conn).expect("Failed to get all streaks!");
+
+    let mut streaks_to_remind = Vec::new();
+    for streak in all_streaks {
+        if !logged_streaks.contains(&streak.id) {
+            streaks_to_remind.push(streak);
+        }
+    }
+    streaks_to_remind
 }
