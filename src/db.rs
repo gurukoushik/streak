@@ -41,7 +41,7 @@ pub fn create_streaks_log_table_if_not_exists(conn: &Connection, table_name: &st
     let query = format!(
         "CREATE TABLE IF NOT EXISTS {} (
         id INTEGER PRIMARY KEY,
-        streakId INTEGER,
+        streak_id INTEGER,
         name TEXT,
         timestamp_utc DATETIME
     )",
@@ -82,7 +82,7 @@ pub fn log_streak(conn: &Connection, name: &String) {
     if !id_list.is_empty() {
         let current_timestamp = chrono::offset::Utc::now();
         conn.execute(
-            "INSERT INTO streakslog (name, streakId, timestamp_utc) VALUES (?1, ?2, ?3)",
+            "INSERT INTO streakslog (name, streak_id, timestamp_utc) VALUES (?1, ?2, ?3)",
             &[
                 &name,
                 &id_list[0].to_string(),
@@ -93,4 +93,20 @@ pub fn log_streak(conn: &Connection, name: &String) {
     } else {
         println!("No streak with name {name}!");
     }
+}
+
+pub fn todays_streak(conn: &Connection) {
+    let current_timestamp = chrono::offset::Utc::now();
+    let query = format!(
+        "SELECT streak_id FROM streakslog WHERE substr(timestamp_utc, 1, 10) = substr('{}', 1, 10)",
+        current_timestamp.to_string()
+    );
+    let mut stmt = conn.prepare(query.as_str()).expect("Failed to run query!");
+    let entries = stmt
+        .query_map([], |row| {
+            Ok(row.get::<_, i32>(0)?)
+        })
+        .expect("Failed to extract entries!")
+        .collect::<Result<Vec<_>>>();
+    println!("{:?}", entries);
 }

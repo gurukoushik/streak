@@ -57,6 +57,7 @@ fn main() {
                     println!("No streaks found!");
                 }
             }
+            db::todays_streak(&conn);
         }
     }
 }
