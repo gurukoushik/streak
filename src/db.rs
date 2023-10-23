@@ -14,7 +14,7 @@ pub struct Streak {
 #[derive(Debug)]
 pub struct LogStreak {
     id: i32,
-    streakId: i32,
+    streak_id: i32,
     timestamp_utc: chrono::DateTime<chrono::Utc>,
 }
 
