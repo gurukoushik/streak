@@ -33,6 +33,7 @@ fn main() {
         Command::Create { name } => {
             let conn = db::get_db_connection(db::STREAKS_DB_PATH);
             db::create_streaks_table_if_not_exists(&conn, db::STREAKS_TABLE_NAME);
+            db::create_streaks_log_table_if_not_exists(&conn, db::STREAKS_LOG_TABLE_NAME);
             db::create_streak(&conn, &name);
             println!("{}", art::rhino());
             println!("Streak for {} created!", name);
@@ -48,6 +49,7 @@ fn main() {
         Command::List {} => {
             let conn = db::get_db_connection(db::STREAKS_DB_PATH);
             db::create_streaks_table_if_not_exists(&conn, db::STREAKS_TABLE_NAME);
+            db::create_streaks_log_table_if_not_exists(&conn, db::STREAKS_LOG_TABLE_NAME);
             let streaks = db::list_streak(&conn);
             match streaks {
                 Ok(s) => {
@@ -63,6 +65,7 @@ fn main() {
         Command::Remind {} => {
             let conn = db::get_db_connection(db::STREAKS_DB_PATH);
             db::create_streaks_table_if_not_exists(&conn, db::STREAKS_TABLE_NAME);
+            db::create_streaks_log_table_if_not_exists(&conn, db::STREAKS_LOG_TABLE_NAME);
             let remind_streaks = db::remind_streaks(&conn);
             for streak in remind_streaks {
                 println!("{}", streak.name)
