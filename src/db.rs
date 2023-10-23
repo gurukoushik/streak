@@ -24,6 +24,11 @@ pub fn get_db_connection(db_path: &str) -> Connection {
     Connection::open(db_path.clone()).expect(format!("DB at {db_path} failed to connect!").as_str())
 }
 
+pub fn init_streaks_db(conn: &Connection) {
+    create_streaks_table_if_not_exists(conn, STREAKS_TABLE_NAME);
+    create_streaks_log_table_if_not_exists(conn, STREAKS_LOG_TABLE_NAME);
+}
+
 // TODO: parametrize to accept attrs object and construct query
 pub fn create_streaks_table_if_not_exists(conn: &Connection, table_name: &str) {
     let query = format!(
