@@ -1,4 +1,4 @@
-use chrono;
+use chrono::{self, DateTime, FixedOffset};
 use rusqlite::{Connection, Result};
 
 pub static STREAKS_DB_PATH: &str = "streaks.db";
@@ -15,7 +15,7 @@ pub struct Streak {
 pub struct LogStreak {
     id: i32,
     streak_id: i32,
-    timestamp_utc: chrono::DateTime<chrono::Utc>,
+    timestamp_utc: String,
 }
 
 // TODO: put db in a non local path
@@ -91,7 +91,7 @@ pub fn log_streak(conn: &Connection, name: &String) {
             &[
                 &name,
                 &id_list[0].to_string(),
-                &current_timestamp.to_string(),
+                &current_timestamp.to_rfc3339(),
             ],
         )
         .expect("Failed to log streak!");
@@ -121,4 +121,56 @@ pub fn remind_streaks(conn: &Connection) -> Vec<Streak> {
         }
     }
     streaks_to_remind
+}
+
+// Get how many days in a row a streak has been logged
+pub fn consecutive_days(conn: &Connection, streak_name: String) -> i32 {
+    let query = format!(
+        "SELECT timestamp_utc FROM streakslog WHERE name = '{}' ORDER BY timestamp_utc DESC",
+        streak_name,
+    );
+    let mut stmt = conn.prepare(query.as_str()).expect("Failed to run query!");
+    let streak_timestamps: Vec<chrono::DateTime<FixedOffset>> = stmt
+        .query_map([], |row| {
+            Ok(chrono::DateTime::parse_from_rfc3339(
+                row.get::<_, String>(0)?.as_str(),
+            ))
+        })
+        .expect("Failed to extract entries!")
+        .collect::<Result<Vec<_>>>()
+        .expect("Failed to get streak timestamps!")
+        .into_iter()
+        .filter_map(Result::ok)
+        .collect();
+
+    let current_timestamp = chrono::offset::Utc::now();
+    streak_count(streak_timestamps, current_timestamp.into())
+}
+
+pub fn streak_count(
+    timestamps: Vec<DateTime<FixedOffset>>,
+    current_timestamp: DateTime<FixedOffset>,
+) -> i32 {
+    if timestamps.len() == 0 {
+        return 0;
+    }
+
+    let mut timestamp = current_timestamp;
+    let mut streak_count = 0;
+
+    for ts in timestamps {
+        let duration = timestamp.signed_duration_since(ts);
+        if duration.num_days() == 0 {
+            if streak_count == 0 {
+                streak_count = 1;
+            }
+        } else if duration.num_days() == 1 {
+            streak_count += 1;
+        } else {
+            break;
+        }
+        timestamp = ts.into();
+    }
+
+    streak_count
 }

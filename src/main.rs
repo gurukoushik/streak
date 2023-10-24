@@ -70,6 +70,7 @@ fn main() {
             for streak in remind_streaks {
                 println!("{}", streak.name)
             }
+            println!("{:?}", db::consecutive_days(&conn, String::from("run")));
         }
     }
 }
