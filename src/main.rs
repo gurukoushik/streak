@@ -1,7 +1,7 @@
 mod art;
 mod db;
 use clap::{Parser, Subcommand};
-use prettytable::{color, Attr, Cell, Row, Table};
+use prettytable::{Cell, Row, Table, format};
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -55,6 +55,7 @@ fn main() {
             match streaks {
                 Ok(s) => {
                     let mut table = Table::new();
+                    table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
                     for streak in s {
                         table.add_row(Row::new(vec![
                             Cell::new(format!("{}", streak.name).as_str()).style_spec("bFg"),
@@ -79,6 +80,7 @@ fn main() {
             let remind_streaks = db::remind_streaks(&conn);
 
             let mut table = Table::new();
+            table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
             for streak in remind_streaks {
                 table.add_row(Row::new(vec![
                     Cell::new(format!("{} 🔥", streak.name).as_str()).style_spec("bFg"),
