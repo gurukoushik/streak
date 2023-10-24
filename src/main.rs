@@ -1,7 +1,7 @@
 mod art;
 mod db;
 use clap::{Parser, Subcommand};
-use prettytable::{Attr, color, Table, Cell, Row};
+use prettytable::{color, Attr, Cell, Row, Table};
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -58,7 +58,12 @@ fn main() {
                     for streak in s {
                         table.add_row(Row::new(vec![
                             Cell::new(format!("{}", streak.name).as_str()).style_spec("bFg"),
-                            Cell::new(format!("{}", db::get_streak_count(&conn, streak.name.clone())).as_str()).style_spec("BriH2")]));
+                            Cell::new(
+                                format!("{} 🔥", db::get_streak_count(&conn, streak.name.clone()))
+                                    .as_str(),
+                            )
+                            .style_spec("Fyc"),
+                        ]));
                     }
                     table.printstd();
                 }
@@ -72,12 +77,16 @@ fn main() {
             db::init_streaks_db(&conn);
 
             let remind_streaks = db::remind_streaks(&conn);
-            
+
             let mut table = Table::new();
             for streak in remind_streaks {
                 table.add_row(Row::new(vec![
-                    Cell::new(format!("{}", streak.name).as_str()).style_spec("bFg"),
-                    Cell::new(format!("{}", db::get_streak_count(&conn, streak.name.clone())).as_str()).style_spec("BriH2")]));
+                    Cell::new(format!("{} 🔥", streak.name).as_str()).style_spec("bFg"),
+                    Cell::new(
+                        format!("{}", db::get_streak_count(&conn, streak.name.clone())).as_str(),
+                    )
+                    .style_spec("Fyc"),
+                ]));
             }
             table.printstd();
         }
