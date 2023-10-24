@@ -124,7 +124,7 @@ pub fn remind_streaks(conn: &Connection) -> Vec<Streak> {
 }
 
 // Get how many days in a row a streak has been logged
-pub fn consecutive_days(conn: &Connection, streak_name: String) -> i32 {
+pub fn get_streak_count(conn: &Connection, streak_name: String) -> i32 {
     let query = format!(
         "SELECT timestamp_utc FROM streakslog WHERE name = '{}' ORDER BY timestamp_utc DESC",
         streak_name,
@@ -144,10 +144,10 @@ pub fn consecutive_days(conn: &Connection, streak_name: String) -> i32 {
         .collect();
 
     let current_timestamp = chrono::offset::Utc::now();
-    streak_count(streak_timestamps, current_timestamp.into())
+    calculate_streak_count(streak_timestamps, current_timestamp.into())
 }
 
-pub fn streak_count(
+pub fn calculate_streak_count(
     timestamps: Vec<DateTime<FixedOffset>>,
     current_timestamp: DateTime<FixedOffset>,
 ) -> i32 {
@@ -189,7 +189,7 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-11T00:00:00+00:00").unwrap(),
             chrono::DateTime::parse_from_rfc3339("2021-01-01T00:00:00+00:00").unwrap(),
         ];
-        assert_eq!(streak_count(timestamps, current_timestamp), 3);
+        assert_eq!(calculate_streak_count(timestamps, current_timestamp), 3);
     }
 
     #[test]
@@ -201,7 +201,7 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-10T00:00:00+00:00").unwrap(),
             chrono::DateTime::parse_from_rfc3339("2021-01-09T00:00:00+00:00").unwrap(),
         ];
-        assert_eq!(streak_count(timestamps, current_timestamp), 1);
+        assert_eq!(calculate_streak_count(timestamps, current_timestamp), 1);
     }
 
     #[test]
@@ -210,6 +210,6 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-13T00:00:00+00:00").unwrap();
         let timestamps =
             vec![chrono::DateTime::parse_from_rfc3339("2021-01-10T00:00:00+00:00").unwrap()];
-        assert_eq!(streak_count(timestamps, current_timestamp), 0);
+        assert_eq!(calculate_streak_count(timestamps, current_timestamp), 0);
     }
 }

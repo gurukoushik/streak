@@ -54,7 +54,11 @@ fn main() {
             match streaks {
                 Ok(s) => {
                     for streak in s {
-                        println!("{}", streak.name)
+                        println!(
+                            "{} {}",
+                            streak.name,
+                            db::get_streak_count(&conn, streak.name.clone())
+                        )
                     }
                 }
                 Err(_) => {
@@ -68,9 +72,12 @@ fn main() {
 
             let remind_streaks = db::remind_streaks(&conn);
             for streak in remind_streaks {
-                println!("{}", streak.name)
+                println!(
+                    "{} {}",
+                    streak.name,
+                    db::get_streak_count(&conn, streak.name.clone())
+                );
             }
-            println!("{:?}", db::consecutive_days(&conn, String::from("run")));
         }
     }
 }
