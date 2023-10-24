@@ -1,6 +1,7 @@
 mod art;
 mod db;
 use clap::{Parser, Subcommand};
+use prettytable::{Attr, color, Table, Cell, Row};
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -53,13 +54,13 @@ fn main() {
             let streaks = db::list_streak(&conn);
             match streaks {
                 Ok(s) => {
+                    let mut table = Table::new();
                     for streak in s {
-                        println!(
-                            "{} {}",
-                            streak.name,
-                            db::get_streak_count(&conn, streak.name.clone())
-                        )
+                        table.add_row(Row::new(vec![
+                            Cell::new(format!("{}", streak.name).as_str()).style_spec("bFg"),
+                            Cell::new(format!("{}", db::get_streak_count(&conn, streak.name.clone())).as_str()).style_spec("BriH2")]));
                     }
+                    table.printstd();
                 }
                 Err(_) => {
                     println!("No streaks found!");
@@ -71,13 +72,14 @@ fn main() {
             db::init_streaks_db(&conn);
 
             let remind_streaks = db::remind_streaks(&conn);
+            
+            let mut table = Table::new();
             for streak in remind_streaks {
-                println!(
-                    "{} {}",
-                    streak.name,
-                    db::get_streak_count(&conn, streak.name.clone())
-                );
+                table.add_row(Row::new(vec![
+                    Cell::new(format!("{}", streak.name).as_str()).style_spec("bFg"),
+                    Cell::new(format!("{}", db::get_streak_count(&conn, streak.name.clone())).as_str()).style_spec("BriH2")]));
             }
+            table.printstd();
         }
     }
 }
