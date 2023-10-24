@@ -11,13 +11,6 @@ pub struct Streak {
     pub name: String,
 }
 
-#[derive(Debug)]
-pub struct LogStreak {
-    id: i32,
-    streak_id: i32,
-    timestamp_utc: String,
-}
-
 // TODO: put db in a non local path
 pub fn get_db_connection(db_path: &str) -> Connection {
     let db_path = String::from(db_path);
