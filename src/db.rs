@@ -174,3 +174,42 @@ pub fn streak_count(
 
     streak_count
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_streak_count_1() {
+        let current_timestamp =
+            chrono::DateTime::parse_from_rfc3339("2021-01-13T00:00:00+00:00").unwrap();
+        let timestamps = vec![
+            chrono::DateTime::parse_from_rfc3339("2021-01-13T00:00:00+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2021-01-12T00:00:00+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2021-01-11T00:00:00+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2021-01-01T00:00:00+00:00").unwrap(),
+        ];
+        assert_eq!(streak_count(timestamps, current_timestamp), 3);
+    }
+
+    #[test]
+    fn test_streak_count_2() {
+        let current_timestamp =
+            chrono::DateTime::parse_from_rfc3339("2021-01-13T00:00:00+00:00").unwrap();
+        let timestamps = vec![
+            chrono::DateTime::parse_from_rfc3339("2021-01-12T00:00:00+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2021-01-10T00:00:00+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2021-01-09T00:00:00+00:00").unwrap(),
+        ];
+        assert_eq!(streak_count(timestamps, current_timestamp), 1);
+    }
+
+    #[test]
+    fn test_streak_count_3() {
+        let current_timestamp =
+            chrono::DateTime::parse_from_rfc3339("2021-01-13T00:00:00+00:00").unwrap();
+        let timestamps =
+            vec![chrono::DateTime::parse_from_rfc3339("2021-01-10T00:00:00+00:00").unwrap()];
+        assert_eq!(streak_count(timestamps, current_timestamp), 0);
+    }
+}
