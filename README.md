@@ -10,11 +10,14 @@ you want to track.
 ## Usage
 
 ```bash
-# Build
-cargo build --release
+# Install
+mkdir -p $HOME/.cargo/bin
+export PATH="$PATH:$HOME/.cargo/bin"
+make install
 
 # Run
-target/release/streak create streakname
-target/release/streak log streakname
-target/release/streak list
+streak create streakname
+streak log streakname
+streak list
+streak remind
 ```
