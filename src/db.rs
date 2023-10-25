@@ -140,6 +140,7 @@ pub fn get_streak_count(conn: &Connection, streak_name: String) -> i32 {
     calculate_streak_count(streak_timestamps, current_timestamp.into())
 }
 
+// TODO: do this based on local timezone
 pub fn calculate_streak_count(
     timestamps: Vec<DateTime<FixedOffset>>,
     current_timestamp: DateTime<FixedOffset>,
