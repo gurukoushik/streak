@@ -1,7 +1,7 @@
 mod art;
 mod db;
 use clap::{Parser, Subcommand};
-use prettytable::{Cell, Row, Table, format};
+use prettytable::{format, Cell, Row, Table};
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -39,11 +39,9 @@ fn main() {
 
             let mut table = Table::new();
             table.set_format(*format::consts::FORMAT_DEFAULT);
-            table.add_row(Row::new(vec![
-                Cell::new(
-                    format!("Streak created for {} 🔥", name).as_str(),
-                ),
-            ]));
+            table.add_row(Row::new(vec![Cell::new(
+                format!("Streak created for {} 🔥", name).as_str(),
+            )]));
             table.printstd();
         }
         Command::Log { name } => {
@@ -53,11 +51,9 @@ fn main() {
             db::log_streak(&conn, &name);
             let mut table = Table::new();
             table.set_format(*format::consts::FORMAT_DEFAULT);
-            table.add_row(Row::new(vec![
-                Cell::new(
-                    format!("Streak logged for {} 🔥", name).as_str(),
-                ),
-            ]));
+            table.add_row(Row::new(vec![Cell::new(
+                format!("Streak logged for {} 🔥", name).as_str(),
+            )]));
             table.printstd();
         }
         Command::List {} => {
