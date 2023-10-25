@@ -36,7 +36,15 @@ fn main() {
             db::init_streaks_db(&conn);
 
             db::create_streak(&conn, &name);
-            println!("Streak for {} created!", name);
+
+            let mut table = Table::new();
+            table.set_format(*format::consts::FORMAT_DEFAULT);
+            table.add_row(Row::new(vec![
+                Cell::new(
+                    format!("Streak created for {} 🔥", name).as_str(),
+                ),
+            ]));
+            table.printstd();
         }
         Command::Log { name } => {
             let conn = db::get_db_connection(db::STREAKS_DB_PATH);
