@@ -25,6 +25,8 @@ enum Command {
     List {},
     /// Remind about incomplete streaks for the day
     Remind {},
+    /// Reset all data (WARNING: This is irreversible and will delete all data)
+    Reset {},
 }
 
 fn main() {
@@ -101,6 +103,11 @@ fn main() {
                 ]));
             }
             table.printstd();
+        }
+        Command::Reset {} => {
+            let db_path = db::get_db_path();
+            std::fs::remove_file(db_path).expect("Unable to delete db file");
+            println!("Reset successful!");
         }
     }
 }
