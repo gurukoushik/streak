@@ -1,6 +1,7 @@
 mod db;
 use clap::{Parser, Subcommand};
 use prettytable::{format, Cell, Row, Table};
+use std::io;
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -105,9 +106,22 @@ fn main() {
             table.printstd();
         }
         Command::Reset {} => {
-            let db_path = db::get_db_path();
-            std::fs::remove_file(db_path).expect("Unable to delete db file");
-            println!("Reset successful!");
+            println!("Are you sure you want to reset all the data? (y/n)");
+
+            let mut input = String::new();
+            io::stdin()
+                .read_line(&mut input)
+                .expect("Failed to read line");
+
+            let confirmation = input.trim().to_lowercase();
+            if confirmation == "y" {
+                // Perform the deletion operation here
+                let db_path = db::get_db_path();
+                std::fs::remove_file(db_path).expect("Unable to delete db file");
+                println!("Streak data reset successfully.");
+            } else {
+                println!("Streak data reset canceled.");
+            }
         }
     }
 }
