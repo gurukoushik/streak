@@ -50,10 +50,12 @@ fn main() {
 
             db::log_streak(&conn, &name);
             let mut table = Table::new();
-            table.set_format(*format::consts::FORMAT_DEFAULT);
-            table.add_row(Row::new(vec![Cell::new(
-                format!("Streak logged for {} 🔥", name).as_str(),
-            )]));
+            table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
+            table.add_row(Row::new(vec![
+                Cell::new(format!("Streak logged for {}!", name).as_str()).style_spec("bFg"),
+                Cell::new(format!("{} 🔥", db::get_streak_count(&conn, name.clone())).as_str())
+                    .style_spec("Fyc"),
+            ]));
             table.printstd();
         }
         Command::List {} => {
@@ -92,9 +94,9 @@ fn main() {
             table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
             for streak in remind_streaks {
                 table.add_row(Row::new(vec![
-                    Cell::new(format!("{} 🔥", streak.name).as_str()).style_spec("bFg"),
+                    Cell::new(format!("{}", streak.name).as_str()).style_spec("bFg"),
                     Cell::new(
-                        format!("{}", db::get_streak_count(&conn, streak.name.clone())).as_str(),
+                        format!("{} 🔥", db::get_streak_count(&conn, streak.name.clone())).as_str(),
                     )
                     .style_spec("Fyc"),
                 ]));
