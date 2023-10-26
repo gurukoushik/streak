@@ -1,4 +1,3 @@
-mod art;
 mod db;
 use clap::{Parser, Subcommand};
 use prettytable::{format, Cell, Row, Table};
