@@ -31,7 +31,7 @@ fn main() {
     let args = App::parse();
     match args.command {
         Command::Create { name } => {
-            let conn = db::get_db_connection(db::STREAKS_DB_PATH);
+            let conn = db::get_db_connection(&db::get_db_path());
             db::init_streaks_db(&conn);
 
             db::create_streak(&conn, &name);
@@ -44,7 +44,7 @@ fn main() {
             table.printstd();
         }
         Command::Log { name } => {
-            let conn = db::get_db_connection(db::STREAKS_DB_PATH);
+            let conn = db::get_db_connection(&db::get_db_path());
             db::init_streaks_db(&conn);
 
             db::log_streak(&conn, &name);
@@ -58,7 +58,7 @@ fn main() {
             table.printstd();
         }
         Command::List {} => {
-            let conn = db::get_db_connection(db::STREAKS_DB_PATH);
+            let conn = db::get_db_connection(&db::get_db_path());
             db::init_streaks_db(&conn);
 
             let streaks = db::list_streak(&conn);
@@ -84,7 +84,7 @@ fn main() {
             }
         }
         Command::Remind {} => {
-            let conn = db::get_db_connection(db::STREAKS_DB_PATH);
+            let conn = db::get_db_connection(&db::get_db_path());
             db::init_streaks_db(&conn);
 
             let remind_streaks = db::remind_streaks(&conn);

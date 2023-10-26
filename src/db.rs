@@ -1,7 +1,9 @@
 use chrono::{self, DateTime, FixedOffset};
 use rusqlite::{Connection, Result};
+use std::env;
+use std::fs;
 
-pub static STREAKS_DB_PATH: &str = "streaks.db";
+pub static STREAKS_DB_NAME: &str = "streaks.db";
 pub static STREAKS_TABLE_NAME: &str = "streaks";
 pub static STREAKS_LOG_TABLE_NAME: &str = "streakslog";
 
@@ -9,6 +11,24 @@ pub static STREAKS_LOG_TABLE_NAME: &str = "streakslog";
 pub struct Streak {
     id: i32,
     pub name: String,
+}
+
+pub fn get_db_path() -> String {
+    match env::var("HOME") {
+        Ok(val) => {
+            let mut db_path = String::from(val);
+            db_path.push_str("/.streak/");
+            // create dir if not exists
+            fs::create_dir_all(db_path.clone()).unwrap();
+
+            db_path.push_str(STREAKS_DB_NAME);
+            db_path
+        }
+        Err(_e) => {
+            println!("Failed to get home directory!");
+            String::from("")
+        }
+    }
 }
 
 // TODO: put db in a non local path
