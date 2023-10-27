@@ -110,7 +110,7 @@ pub fn create_streak(conn: &Connection, name: &String, frequency: &StreakFrequen
 }
 
 pub fn list_streak(conn: &Connection) -> Result<Vec<Streak>> {
-    let query = "SELECT id, name FROM streaks";
+    let query = "SELECT id, name, frequency FROM streaks";
     let mut stmt = conn.prepare(query).expect("Failed to run query!");
     let entries = stmt
         .query_map([], |row| {
@@ -192,14 +192,32 @@ pub fn get_streak_count(conn: &Connection, streak_name: String) -> i32 {
         .filter_map(Result::ok)
         .collect();
 
+    // Get the ffrequency corresponding to the streak name from the streaks table
+    let query = format!(
+        "SELECT frequency FROM streaks WHERE name = '{}'",
+        streak_name
+    );
+    let mut stmt = conn.prepare(query.as_str()).expect("Failed to run query!");
+    let frequency: Vec<String> = stmt
+        .query_map([], |row| Ok(row.get::<_, String>(0)?))
+        .expect("Failed to extract entries!")
+        .collect::<Result<Vec<_>>>()
+        .expect("Failed to get streak frequency!");
+    let streak_frequency = StreakFrequency::from_str(frequency[0].as_str()).unwrap();
+
     let current_timestamp = chrono::offset::Utc::now();
-    calculate_streak_count(streak_timestamps, current_timestamp.into())
+    calculate_streak_count(
+        streak_timestamps,
+        current_timestamp.into(),
+        streak_frequency,
+    )
 }
 
 // TODO: do this based on local timezone
 pub fn calculate_streak_count(
     timestamps: Vec<DateTime<FixedOffset>>,
     current_timestamp: DateTime<FixedOffset>,
+    streak_frequency: StreakFrequency,
 ) -> i32 {
     if timestamps.len() == 0 {
         return 0;
@@ -239,7 +257,10 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-11T00:00:00+00:00").unwrap(),
             chrono::DateTime::parse_from_rfc3339("2021-01-01T00:00:00+00:00").unwrap(),
         ];
-        assert_eq!(calculate_streak_count(timestamps, current_timestamp), 3);
+        assert_eq!(
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::AllDays),
+            3
+        );
     }
 
     #[test]
@@ -251,7 +272,10 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-10T00:00:00+00:00").unwrap(),
             chrono::DateTime::parse_from_rfc3339("2021-01-09T00:00:00+00:00").unwrap(),
         ];
-        assert_eq!(calculate_streak_count(timestamps, current_timestamp), 1);
+        assert_eq!(
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::AllDays),
+            1
+        );
     }
 
     #[test]
@@ -260,6 +284,9 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-13T00:00:00+00:00").unwrap();
         let timestamps =
             vec![chrono::DateTime::parse_from_rfc3339("2021-01-10T00:00:00+00:00").unwrap()];
-        assert_eq!(calculate_streak_count(timestamps, current_timestamp), 0);
+        assert_eq!(
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::AllDays),
+            0
+        );
     }
 }
