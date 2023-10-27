@@ -16,7 +16,7 @@ enum Command {
     Create {
         /// Name of the habit to create a streak
         name: String,
-        /// Frequency of the streak (AllDays, Weekdays)
+        /// Frequency of the streak (alldays, weekdays)
         frequency: Option<String>,
     },
     /// Log streak for the day
@@ -41,7 +41,7 @@ fn main() {
 
             let frequency = match frequency {
                 Some(f) => db::StreakFrequency::from_str(&f).unwrap(),
-                None => db::StreakFrequency::from_str("AllDays").unwrap(),
+                None => db::StreakFrequency::from_str("alldays").unwrap(),
             };
             db::create_streak(&conn, &name, &frequency);
 

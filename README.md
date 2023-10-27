@@ -20,4 +20,5 @@ streak create streakname
 streak log streakname
 streak list
 streak remind
+streak reset
 ```

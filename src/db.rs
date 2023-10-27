@@ -11,8 +11,8 @@ pub static STREAKS_LOG_TABLE_NAME: &str = "streakslog";
 
 #[derive(Debug, PartialEq)]
 pub enum StreakFrequency {
-    AllDays,
-    Weekdays,
+    alldays,
+    weekdays,
 }
 
 impl FromStr for StreakFrequency {
@@ -20,8 +20,8 @@ impl FromStr for StreakFrequency {
 
     fn from_str(input: &str) -> Result<StreakFrequency, Self::Err> {
         match input {
-            "AllDays" => Ok(StreakFrequency::AllDays),
-            "Weekdays" => Ok(StreakFrequency::Weekdays),
+            "alldays" => Ok(StreakFrequency::alldays),
+            "weekdays" => Ok(StreakFrequency::weekdays),
             _ => Err(()),
         }
     }
@@ -30,8 +30,8 @@ impl FromStr for StreakFrequency {
 impl fmt::Display for StreakFrequency {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            StreakFrequency::AllDays => write!(f, "AllDays"),
-            StreakFrequency::Weekdays => write!(f, "Weekdays"),
+            StreakFrequency::alldays => write!(f, "alldays"),
+            StreakFrequency::weekdays => write!(f, "weekdays"),
         }
     }
 }
@@ -258,7 +258,7 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-01T00:00:00+00:00").unwrap(),
         ];
         assert_eq!(
-            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::AllDays),
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::alldays),
             3
         );
     }
@@ -273,7 +273,7 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-09T00:00:00+00:00").unwrap(),
         ];
         assert_eq!(
-            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::AllDays),
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::alldays),
             1
         );
     }
@@ -285,7 +285,7 @@ mod tests {
         let timestamps =
             vec![chrono::DateTime::parse_from_rfc3339("2021-01-10T00:00:00+00:00").unwrap()];
         assert_eq!(
-            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::AllDays),
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::alldays),
             0
         );
     }
