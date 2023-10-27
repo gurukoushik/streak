@@ -69,6 +69,7 @@ pub fn create_streaks_log_table_if_not_exists(conn: &Connection, table_name: &st
         .expect("Failed to create table");
 }
 
+// TODO: add option to only count streaks on weekdays
 pub fn create_streak(conn: &Connection, name: &String) {
     conn.execute("INSERT INTO streaks (name) VALUES (?1)", &[&name])
         .expect("Failed to add streak!");
