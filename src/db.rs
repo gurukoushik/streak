@@ -1,16 +1,46 @@
 use chrono::{self, DateTime, FixedOffset};
 use rusqlite::{Connection, Result};
 use std::env;
+use std::fmt;
 use std::fs;
+use std::str::FromStr;
 
 pub static STREAKS_DB_NAME: &str = "streaks.db";
 pub static STREAKS_TABLE_NAME: &str = "streaks";
 pub static STREAKS_LOG_TABLE_NAME: &str = "streakslog";
 
+#[derive(Debug, PartialEq)]
+pub enum StreakFrequency {
+    AllDays,
+    Weekdays,
+}
+
+impl FromStr for StreakFrequency {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<StreakFrequency, Self::Err> {
+        match input {
+            "AllDays" => Ok(StreakFrequency::AllDays),
+            "Weekdays" => Ok(StreakFrequency::Weekdays),
+            _ => Err(()),
+        }
+    }
+}
+
+impl fmt::Display for StreakFrequency {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            StreakFrequency::AllDays => write!(f, "AllDays"),
+            StreakFrequency::Weekdays => write!(f, "Weekdays"),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Streak {
     id: i32,
     pub name: String,
+    pub frequency: StreakFrequency,
 }
 
 pub fn get_db_path() -> String {
@@ -47,7 +77,8 @@ pub fn create_streaks_table_if_not_exists(conn: &Connection, table_name: &str) {
     let query = format!(
         "CREATE TABLE IF NOT EXISTS {} (
         id INTEGER PRIMARY KEY,
-        name TEXT UNIQUE
+        name TEXT UNIQUE,
+        frequency TEXT
     )",
         table_name
     );
@@ -70,9 +101,12 @@ pub fn create_streaks_log_table_if_not_exists(conn: &Connection, table_name: &st
 }
 
 // TODO: add option to only count streaks on weekdays
-pub fn create_streak(conn: &Connection, name: &String) {
-    conn.execute("INSERT INTO streaks (name) VALUES (?1)", &[&name])
-        .expect("Failed to add streak!");
+pub fn create_streak(conn: &Connection, name: &String, frequency: &StreakFrequency) {
+    conn.execute(
+        "INSERT INTO streaks (name, frequency) VALUES (?1, ?2)",
+        &[&name, &frequency.to_string()],
+    )
+    .expect("Failed to add streak!");
 }
 
 pub fn list_streak(conn: &Connection) -> Result<Vec<Streak>> {
@@ -83,6 +117,7 @@ pub fn list_streak(conn: &Connection) -> Result<Vec<Streak>> {
             Ok(Streak {
                 id: row.get(0)?,
                 name: row.get(1)?,
+                frequency: StreakFrequency::from_str(row.get::<_, String>(2)?.as_str()).unwrap(),
             })
         })
         .expect("Failed to extract entries!")

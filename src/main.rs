@@ -1,7 +1,7 @@
 mod db;
 use clap::{Parser, Subcommand};
 use prettytable::{format, Cell, Row, Table};
-use std::io;
+use std::{io, str::FromStr};
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -16,6 +16,8 @@ enum Command {
     Create {
         /// Name of the habit to create a streak
         name: String,
+        /// Frequency of the streak (AllDays, Weekdays)
+        frequency: Option<String>,
     },
     /// Log streak for the day
     Log {
@@ -33,11 +35,15 @@ enum Command {
 fn main() {
     let args = App::parse();
     match args.command {
-        Command::Create { name } => {
+        Command::Create { name, frequency } => {
             let conn = db::get_db_connection(&db::get_db_path());
             db::init_streaks_db(&conn);
 
-            db::create_streak(&conn, &name);
+            let frequency = match frequency {
+                Some(f) => db::StreakFrequency::from_str(&f).unwrap(),
+                None => db::StreakFrequency::from_str("AllDays").unwrap(),
+            };
+            db::create_streak(&conn, &name, &frequency);
 
             let mut table = Table::new();
             table.set_format(*format::consts::FORMAT_DEFAULT);
