@@ -17,6 +17,7 @@ make install
 
 # Run
 streak create streakname
+streak create streakname weekdays
 streak log streakname
 streak list
 streak remind
