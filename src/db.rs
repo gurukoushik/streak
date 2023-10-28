@@ -238,6 +238,7 @@ pub fn calculate_streak_count(
         } else {
             if streak_frequency == StreakFrequency::weekdays {
                 if is_skipping_weekend(ts, timestamp) {
+                    streak_count += 1;
                     continue;
                 } else {
                     break;
@@ -257,6 +258,7 @@ pub fn is_skipping_weekend(
     t2: chrono::DateTime<FixedOffset>,
 ) -> bool {
     let duration = t2.signed_duration_since(t1);
+    println!("duration: {:?}", duration.num_days());
     if duration.num_days() == 3 {
         if t1.weekday() == chrono::Weekday::Fri && t2.weekday() == chrono::Weekday::Mon {
             return true;
