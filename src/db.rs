@@ -332,13 +332,28 @@ mod tests {
             vec![
                 chrono::DateTime::parse_from_rfc3339("2023-10-31T00:00:01+00:00").unwrap(),
                 chrono::DateTime::parse_from_rfc3339("2023-10-30T00:00:01+00:00").unwrap(),
-                // chrono::DateTime::parse_from_rfc3339("2023-10-29T00:00:01+00:00").unwrap(),
-                // chrono::DateTime::parse_from_rfc3339("2023-10-28T00:00:01+00:00").unwrap(),
                 chrono::DateTime::parse_from_rfc3339("2023-10-27T00:00:01+00:00").unwrap(),
             ];
         assert_eq!(
             calculate_streak_count(timestamps, current_timestamp, StreakFrequency::weekdays),
             3
+        );
+    }
+
+    #[test]
+    fn test_streak_count_5() {
+        let current_timestamp =
+            chrono::DateTime::parse_from_rfc3339("2023-11-01T00:00:01+00:00").unwrap();
+        let timestamps =
+            vec![
+                chrono::DateTime::parse_from_rfc3339("2023-10-31T00:00:01+00:00").unwrap(),
+                chrono::DateTime::parse_from_rfc3339("2023-10-30T00:00:01+00:00").unwrap(),
+                chrono::DateTime::parse_from_rfc3339("2023-10-29T00:00:01+00:00").unwrap(),
+                chrono::DateTime::parse_from_rfc3339("2023-10-27T00:00:01+00:00").unwrap(),
+            ];
+        assert_eq!(
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::weekdays),
+            4
         );
     }
 }
