@@ -1,3 +1,4 @@
+use chrono::Datelike;
 use chrono::{self, DateTime, FixedOffset};
 use rusqlite::{Connection, Result};
 use std::env;
@@ -235,12 +236,41 @@ pub fn calculate_streak_count(
         } else if duration.num_days() == 1 {
             streak_count += 1;
         } else {
-            break;
+            if streak_frequency == StreakFrequency::weekdays {
+                if is_skipping_weekend(ts, timestamp) {
+                    continue;
+                }
+                else {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
         timestamp = ts.into();
     }
 
     streak_count
+}
+
+pub fn is_skipping_weekend(t1: chrono::DateTime<FixedOffset>, t2: chrono::DateTime<FixedOffset>) -> bool {
+    let duration = t2.signed_duration_since(t1);
+    if duration.num_days() == 3 {
+        if t1.weekday() == chrono::Weekday::Fri && t2.weekday() == chrono::Weekday::Mon {
+            return true;
+        }
+    }
+    if duration.num_days() == 2 {
+        if t1.weekday() == chrono::Weekday::Fri && t2.weekday() == chrono::Weekday::Sun {
+            return true;
+        }
+    }
+    if duration.num_days() == 2 {
+        if t1.weekday() == chrono::Weekday::Sat && t2.weekday() == chrono::Weekday::Mon {
+            return true;
+        }
+    }
+    false
 }
 
 #[cfg(test)]
