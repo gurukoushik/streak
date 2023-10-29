@@ -63,7 +63,6 @@ pub fn get_db_path() -> String {
     }
 }
 
-// TODO: put db in a non local path
 pub fn get_db_connection(db_path: &str) -> Connection {
     let db_path = String::from(db_path);
     Connection::open(db_path.clone()).expect(format!("DB at {db_path} failed to connect!").as_str())
@@ -74,7 +73,6 @@ pub fn init_streaks_db(conn: &Connection) {
     create_streaks_log_table_if_not_exists(conn, STREAKS_LOG_TABLE_NAME);
 }
 
-// TODO: parametrize to accept attrs object and construct query
 pub fn create_streaks_table_if_not_exists(conn: &Connection, table_name: &str) {
     let query = format!(
         "CREATE TABLE IF NOT EXISTS {} (
@@ -102,7 +100,6 @@ pub fn create_streaks_log_table_if_not_exists(conn: &Connection, table_name: &st
         .expect("Failed to create table");
 }
 
-// TODO: add option to only count streaks on Weekdays
 pub fn create_streak(conn: &Connection, name: &String, frequency: &StreakFrequency) {
     conn.execute(
         "INSERT INTO streaks (name, frequency) VALUES (?1, ?2)",
@@ -219,7 +216,6 @@ pub fn get_streak_count(conn: &Connection, streak_name: String) -> i32 {
     )
 }
 
-// TODO: do this based on local timezone
 pub fn calculate_streak_count(
     timestamps: Vec<DateTime<FixedOffset>>,
     current_timestamp: DateTime<FixedOffset>,
