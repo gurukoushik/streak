@@ -4,6 +4,7 @@ use rusqlite::{Connection, Result};
 use std::env;
 use std::fmt;
 use std::fs;
+use std::io::{Error, ErrorKind};
 use std::str::FromStr;
 
 pub static STREAKS_DB_NAME: &str = "streaks.db";
@@ -126,7 +127,7 @@ pub fn list_streak(conn: &Connection) -> Result<Vec<Streak>> {
     entries
 }
 
-pub fn log_streak(conn: &Connection, name: &String) {
+pub fn log_streak(conn: &Connection, name: &String) -> Result<String, Error> {
     let q = format!("SELECT id FROM streaks WHERE name = '{}'", name);
     let mut stmt = conn.prepare(q.as_str()).expect("Streak was not created!");
     let rows = stmt
@@ -145,8 +146,12 @@ pub fn log_streak(conn: &Connection, name: &String) {
             ],
         )
         .expect("Failed to log streak!");
+        Ok(current_timestamp.to_rfc3339())
     } else {
-        println!("No streak with name {name}!");
+        Err(Error::new(
+            ErrorKind::InvalidInput,
+            "No streak with name {name}!",
+        ))
     }
 }
 

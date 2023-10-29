@@ -1,5 +1,6 @@
 mod db;
 use clap::{Parser, Subcommand};
+use colored::*;
 use prettytable::{format, Cell, Row, Table};
 use std::process::exit;
 use std::{io, str::FromStr};
@@ -63,15 +64,25 @@ fn main() {
             let conn = db::get_db_connection(&db::get_db_path());
             db::init_streaks_db(&conn);
 
-            db::log_streak(&conn, &name);
-            let mut table = Table::new();
-            table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
-            table.add_row(Row::new(vec![
-                Cell::new(format!("Streak logged for {}!", name).as_str()).style_spec("bFg"),
-                Cell::new(format!("{} 🔥", db::get_streak_count(&conn, name.clone())).as_str())
-                    .style_spec("Fyc"),
-            ]));
-            table.printstd();
+            match db::log_streak(&conn, &name) {
+                Ok(_) => {
+                    let mut table = Table::new();
+                    table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
+                    table.add_row(Row::new(vec![
+                        Cell::new(format!("Streak logged for {}!", name).as_str())
+                            .style_spec("bFg"),
+                        Cell::new(
+                            format!("{} 🔥", db::get_streak_count(&conn, name.clone())).as_str(),
+                        )
+                        .style_spec("Fyc"),
+                    ]));
+                    table.printstd();
+                }
+                Err(_) => {
+                    println!("{}", format!("No streak found with name: {}", name).red());
+                    exit(1);
+                }
+            };
         }
         Command::List {} => {
             let conn = db::get_db_connection(&db::get_db_path());
@@ -95,7 +106,8 @@ fn main() {
                     table.printstd();
                 }
                 Err(_) => {
-                    println!("No streaks found!");
+                    println!("{}", "No streaks found!".red());
+                    exit(1);
                 }
             }
         }
