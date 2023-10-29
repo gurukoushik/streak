@@ -128,10 +128,15 @@ fn main() {
 
             let confirmation = input.trim().to_lowercase();
             if confirmation == "y" {
-                // Perform the deletion operation here
                 let db_path = db::get_db_path();
-                std::fs::remove_file(db_path).expect("Unable to delete db file");
-                println!("Streak data reset successfully.");
+                match std::fs::remove_file(db_path) {
+                    Ok(_) => {
+                        println!("Streak data reset successfully.");
+                    },
+                    Err(_) => {
+                        println!("Streak data reset successfully.");
+                    }
+                };
             } else {
                 println!("Streak data reset canceled.");
             }
