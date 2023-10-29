@@ -5,15 +5,13 @@ to help with accountability and tracking. This is a CLI app that
 lets you create, register and track custom streaks for any habit
 you want to track.
 
-## [Under Development]
-
 ## Usage
 
 ```bash
 # Install
-mkdir -p $HOME/.cargo/bin
-export PATH="$PATH:$HOME/.cargo/bin"
-make install
+git clone git@github.com:gurukoushik/streak.git
+cd streak
+cargo install --path .
 
 # Run
 streak create streakname
