@@ -91,6 +91,10 @@ fn main() {
             let streaks = db::list_streak(&conn);
             match streaks {
                 Ok(s) => {
+                    if s.len() == 0 {
+                        println!("{}", "No streaks found!".red());
+                        exit(0);
+                    }
                     let mut table = Table::new();
                     table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
                     for streak in s {
@@ -116,6 +120,10 @@ fn main() {
             db::init_streaks_db(&conn);
 
             let remind_streaks = db::remind_streaks(&conn);
+            if remind_streaks.len() == 0 {
+                println!("{}", "Good job! All streaks completed for the day!".green());
+                exit(0);
+            }
 
             let mut table = Table::new();
             table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
@@ -131,7 +139,11 @@ fn main() {
             table.printstd();
         }
         Command::Reset {} => {
-            println!("Are you sure you want to reset all the data? ({}/{})", "y".green(), "n".red());
+            println!(
+                "Are you sure you want to reset all the data? ({}/{})",
+                "y".green(),
+                "n".red()
+            );
 
             let mut input = String::new();
             io::stdin()
