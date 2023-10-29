@@ -131,7 +131,7 @@ fn main() {
             table.printstd();
         }
         Command::Reset {} => {
-            println!("Are you sure you want to reset all the data? (y/n)");
+            println!("Are you sure you want to reset all the data? ({}/{})", "y".green(), "n".red());
 
             let mut input = String::new();
             io::stdin()
@@ -143,14 +143,14 @@ fn main() {
                 let db_path = db::get_db_path();
                 match std::fs::remove_file(db_path) {
                     Ok(_) => {
-                        println!("Streak data reset successfully.");
+                        println!("{}", "Streak data reset successfully.".green());
                     }
                     Err(_) => {
-                        println!("Streak data reset successfully.");
+                        println!("{}", "Streak data reset successfully.".green());
                     }
                 };
             } else {
-                println!("Streak data reset canceled.");
+                println!("{}", "Streak data reset canceled.".red());
             }
         }
     }
