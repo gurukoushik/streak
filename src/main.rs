@@ -132,7 +132,7 @@ fn main() {
                 match std::fs::remove_file(db_path) {
                     Ok(_) => {
                         println!("Streak data reset successfully.");
-                    },
+                    }
                     Err(_) => {
                         println!("Streak data reset successfully.");
                     }
