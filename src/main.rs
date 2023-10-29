@@ -1,6 +1,7 @@
 mod db;
 use clap::{Parser, Subcommand};
 use prettytable::{format, Cell, Row, Table};
+use std::process::exit;
 use std::{io, str::FromStr};
 
 #[derive(Debug, Parser)]
@@ -16,7 +17,7 @@ enum Command {
     Create {
         /// Name of the habit to create a streak
         name: String,
-        /// Frequency of the streak (alldays, weekdays)
+        /// Frequency of the streak (Alldays, Weekdays)
         frequency: Option<String>,
     },
     /// Log streak for the day
@@ -40,8 +41,14 @@ fn main() {
             db::init_streaks_db(&conn);
 
             let frequency = match frequency {
-                Some(f) => db::StreakFrequency::from_str(&f).unwrap(),
-                None => db::StreakFrequency::from_str("alldays").unwrap(),
+                Some(f) => match db::StreakFrequency::from_str(&f) {
+                    Ok(f) => f,
+                    Err(_) => {
+                        println!("Invalid frequency provided! Valid values are: Alldays, Weekdays");
+                        exit(1);
+                    }
+                },
+                None => db::StreakFrequency::Alldays,
             };
             db::create_streak(&conn, &name, &frequency);
 

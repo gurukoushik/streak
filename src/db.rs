@@ -12,8 +12,8 @@ pub static STREAKS_LOG_TABLE_NAME: &str = "streakslog";
 
 #[derive(Debug, PartialEq)]
 pub enum StreakFrequency {
-    alldays,
-    weekdays,
+    Alldays,
+    Weekdays,
 }
 
 impl FromStr for StreakFrequency {
@@ -21,8 +21,8 @@ impl FromStr for StreakFrequency {
 
     fn from_str(input: &str) -> Result<StreakFrequency, Self::Err> {
         match input {
-            "alldays" => Ok(StreakFrequency::alldays),
-            "weekdays" => Ok(StreakFrequency::weekdays),
+            "Alldays" => Ok(StreakFrequency::Alldays),
+            "Weekdays" => Ok(StreakFrequency::Weekdays),
             _ => Err(()),
         }
     }
@@ -31,8 +31,8 @@ impl FromStr for StreakFrequency {
 impl fmt::Display for StreakFrequency {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            StreakFrequency::alldays => write!(f, "alldays"),
-            StreakFrequency::weekdays => write!(f, "weekdays"),
+            StreakFrequency::Alldays => write!(f, "Alldays"),
+            StreakFrequency::Weekdays => write!(f, "Weekdays"),
         }
     }
 }
@@ -101,7 +101,7 @@ pub fn create_streaks_log_table_if_not_exists(conn: &Connection, table_name: &st
         .expect("Failed to create table");
 }
 
-// TODO: add option to only count streaks on weekdays
+// TODO: add option to only count streaks on Weekdays
 pub fn create_streak(conn: &Connection, name: &String, frequency: &StreakFrequency) {
     conn.execute(
         "INSERT INTO streaks (name, frequency) VALUES (?1, ?2)",
@@ -236,7 +236,7 @@ pub fn calculate_streak_count(
         } else if duration.num_days() == 1 {
             streak_count += 1;
         } else {
-            if streak_frequency == StreakFrequency::weekdays {
+            if streak_frequency == StreakFrequency::Weekdays {
                 if is_skipping_weekend(ts, timestamp) {
                     streak_count += 1;
                     continue;
@@ -292,7 +292,7 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-01T00:00:00+00:00").unwrap(),
         ];
         assert_eq!(
-            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::alldays),
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::Alldays),
             3
         );
     }
@@ -307,7 +307,7 @@ mod tests {
             chrono::DateTime::parse_from_rfc3339("2021-01-09T00:00:00+00:00").unwrap(),
         ];
         assert_eq!(
-            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::alldays),
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::Alldays),
             1
         );
     }
@@ -319,7 +319,7 @@ mod tests {
         let timestamps =
             vec![chrono::DateTime::parse_from_rfc3339("2021-01-10T00:00:00+00:00").unwrap()];
         assert_eq!(
-            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::alldays),
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::Alldays),
             0
         );
     }
@@ -328,14 +328,13 @@ mod tests {
     fn test_streak_count_4() {
         let current_timestamp =
             chrono::DateTime::parse_from_rfc3339("2023-11-01T00:00:01+00:00").unwrap();
-        let timestamps =
-            vec![
-                chrono::DateTime::parse_from_rfc3339("2023-10-31T00:00:01+00:00").unwrap(),
-                chrono::DateTime::parse_from_rfc3339("2023-10-30T00:00:01+00:00").unwrap(),
-                chrono::DateTime::parse_from_rfc3339("2023-10-27T00:00:01+00:00").unwrap(),
-            ];
+        let timestamps = vec![
+            chrono::DateTime::parse_from_rfc3339("2023-10-31T00:00:01+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2023-10-30T00:00:01+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2023-10-27T00:00:01+00:00").unwrap(),
+        ];
         assert_eq!(
-            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::weekdays),
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::Weekdays),
             3
         );
     }
@@ -344,15 +343,14 @@ mod tests {
     fn test_streak_count_5() {
         let current_timestamp =
             chrono::DateTime::parse_from_rfc3339("2023-11-01T00:00:01+00:00").unwrap();
-        let timestamps =
-            vec![
-                chrono::DateTime::parse_from_rfc3339("2023-10-31T00:00:01+00:00").unwrap(),
-                chrono::DateTime::parse_from_rfc3339("2023-10-30T00:00:01+00:00").unwrap(),
-                chrono::DateTime::parse_from_rfc3339("2023-10-29T00:00:01+00:00").unwrap(),
-                chrono::DateTime::parse_from_rfc3339("2023-10-27T00:00:01+00:00").unwrap(),
-            ];
+        let timestamps = vec![
+            chrono::DateTime::parse_from_rfc3339("2023-10-31T00:00:01+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2023-10-30T00:00:01+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2023-10-29T00:00:01+00:00").unwrap(),
+            chrono::DateTime::parse_from_rfc3339("2023-10-27T00:00:01+00:00").unwrap(),
+        ];
         assert_eq!(
-            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::weekdays),
+            calculate_streak_count(timestamps, current_timestamp, StreakFrequency::Weekdays),
             4
         );
     }
