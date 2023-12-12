@@ -15,6 +15,7 @@ pub static STREAKS_LOG_TABLE_NAME: &str = "streakslog";
 pub enum StreakFrequency {
     Alldays,
     Weekdays,
+    Weekends,
 }
 
 impl FromStr for StreakFrequency {
@@ -24,6 +25,7 @@ impl FromStr for StreakFrequency {
         match input {
             "Alldays" => Ok(StreakFrequency::Alldays),
             "Weekdays" => Ok(StreakFrequency::Weekdays),
+            "Weekends" => Ok(StreakFrequency::Weekends),
             _ => Err(()),
         }
     }
@@ -34,6 +36,7 @@ impl fmt::Display for StreakFrequency {
         match self {
             StreakFrequency::Alldays => write!(f, "Alldays"),
             StreakFrequency::Weekdays => write!(f, "Weekdays"),
+            StreakFrequency::Weekends => write!(f, "Weekends"),
         }
     }
 }
@@ -228,6 +231,7 @@ pub fn calculate_streak_count(
     let mut timestamp = current_timestamp;
     let mut streak_count = 0;
 
+    // TODO: handle weekend freq
     for ts in timestamps {
         let duration = timestamp.signed_duration_since(ts);
         if duration.num_days() == 0 {
